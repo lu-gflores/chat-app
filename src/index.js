@@ -15,12 +15,19 @@ app.use(express.static(path.join(__dirname, '../public')))
 
 io.on('connection', (socket) => {
     console.log('new web socket connection')
-
+    //when a new client connects to server
     socket.emit('message', 'Welcome!')
+
+    //broadcasts all clients except the joining user
     socket.broadcast.emit('message', 'A new user has joined!')
     socket.on('sendMessage', (message) => {
         io.emit('message', message)
     })
+
+    socket.on('sendLocation', (coords) => {
+        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+    })
+
     socket.on('disconnect', () => {
         io.emit('message', 'A user has left')
     })
