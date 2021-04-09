@@ -7,15 +7,26 @@ const messages = document.getElementById('messages')
 const locationBtn = document.getElementById('sendLocation')
 
 const messageTemplate = document.getElementById('message-template').innerHTML
-
+const locationTemplate = document.getElementById('location-template').innerHTML
 
 //message event
-socket.on('message', (messsage) => {
-    console.log(messsage)
+socket.on('message', (message) => {
+    console.log(message)
     const html = Mustache.render(messageTemplate, {
-        message
+        message: message.text,
+        createdAt: moment(message.createdAt).format('h:mm a')
     })
     messages.insertAdjacentHTML('beforeend', html)
+})
+
+//rendering location to html
+socket.on('locationMessage', (message) => {
+    console.log(message)
+    const locationURL = Mustache.render(locationTemplate, {
+        url: message.url,
+        createdAt: moment(message.createdAt).format('h:mm a')
+    })
+    messages.insertAdjacentHTML('beforeend', locationURL)
 })
 
 formMessage.addEventListener('submit', (e) => {
@@ -51,5 +62,7 @@ locationBtn.addEventListener('click', () => {
             locationBtn.removeAttribute('disabled', 'disabled')
             console.log('Location shared')
         })
+
+
     })
 })

@@ -4,6 +4,8 @@ const http = require('http')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
 
+const { generateMessage, generateLocationMessage } = require('./utils/messages')
+
 const app = express()
 //creating server outside of express
 const server = http.createServer(app)
@@ -16,11 +18,12 @@ app.use(express.static(path.join(__dirname, '../public')))
 
 io.on('connection', (socket) => {
     console.log('new web socket connection')
+
     //when a new client connects to server
-    socket.emit('message', 'Welcome!')
+    socket.emit('message', generateMessage('Welcome!'))
 
     //broadcasts all clients except the joining user
-    socket.broadcast.emit('message', 'A new user has joined!')
+    socket.broadcast.emit('message', generateMessage('A new user has joined!'))
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter()
@@ -28,17 +31,20 @@ io.on('connection', (socket) => {
             return callback('Profanity is prohibited')
         }
 
-        io.emit('message', message)
+        io.emit('message', generateMessage(message))
         callback('Delivered')
     })
 
+    //listens and sends coordinates to console
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback('Location shared')
     })
 
+
+    //unique listener, runs when a client closes out the browser
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left')
+        io.emit('message', generateMessage('A user has left'))
     })
 })
 
