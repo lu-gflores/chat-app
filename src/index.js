@@ -19,11 +19,15 @@ app.use(express.static(path.join(__dirname, '../public')))
 io.on('connection', (socket) => {
     console.log('new web socket connection')
 
-    //when a new client connects to server
-    socket.emit('message', generateMessage('Welcome!'))
+    socket.on('join', ({ username, room }) => {
+        socket.join(room)
 
-    //broadcasts all clients except the joining user
-    socket.broadcast.emit('message', generateMessage('A new user has joined!'))
+        //when a new client connects to server
+        socket.emit('message', generateMessage('Welcome!'))
+        //broadcasts all clients except the joining user
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined the room.`))
+
+    })
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter()
@@ -31,7 +35,7 @@ io.on('connection', (socket) => {
             return callback('Profanity is prohibited')
         }
 
-        io.emit('message', generateMessage(message))
+        io.to('fort').emit('message', generateMessage(message))
         callback('Delivered')
     })
 
