@@ -3,11 +3,19 @@ const socket = io()
 const formMessage = document.getElementById('messageForm')
 const messageInputBtn = document.getElementById('send')
 const messageText = document.getElementById('message')
-
+const messages = document.getElementById('messages')
 const locationBtn = document.getElementById('sendLocation')
 
-socket.on('message', (welcome) => {
-    console.log(welcome)
+const messageTemplate = document.getElementById('message-template').innerHTML
+
+
+//message event
+socket.on('message', (messsage) => {
+    console.log(messsage)
+    const html = Mustache.render(messageTemplate, {
+        message
+    })
+    messages.insertAdjacentHTML('beforeend', html)
 })
 
 formMessage.addEventListener('submit', (e) => {
