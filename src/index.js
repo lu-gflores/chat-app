@@ -31,6 +31,11 @@ io.on('connection', (socket) => {
         socket.emit('message', generateMessage('Admin', 'Welcome!'))
         //broadcasts all clients except the joining user
         socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined the room.`))
+
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
         //user is able to join
         callback()
     })
@@ -55,11 +60,16 @@ io.on('connection', (socket) => {
     })
 
 
+
     //unique listener, runs when a client closes out the browser
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
         if (user) {
             io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left the room.`))
+            io.to(user.room).emit('roomData', {
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            })
         }
     })
 })
