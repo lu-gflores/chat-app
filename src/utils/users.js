@@ -46,7 +46,8 @@ const getUsersInRoom = (room) => (users.filter(user => user.room === room))
 module.exports = {
     addUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    removeUser
 }
 
 //checking validation for exisiting users

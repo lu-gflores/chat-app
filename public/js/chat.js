@@ -15,6 +15,7 @@ const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true }
 socket.on('message', (message) => {
     console.log(message)
     const html = Mustache.render(messageTemplate, {
+        username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format('h:mm a')
     })
@@ -25,6 +26,7 @@ socket.on('message', (message) => {
 socket.on('locationMessage', (message) => {
     console.log(message)
     const locationURL = Mustache.render(locationTemplate, {
+        username: message.username,
         url: message.url,
         createdAt: moment(message.createdAt).format('h:mm a')
     })
@@ -70,4 +72,10 @@ locationBtn.addEventListener('click', () => {
 })
 
 
-socket.emit('join', { username, room })
+socket.emit('join', { username, room }, (error) => {
+    //redirects to home page if username already exists
+    if (error) {
+        alert(error)
+        location.href = '/'
+    }
+})
