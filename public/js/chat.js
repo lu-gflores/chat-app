@@ -35,7 +35,7 @@ const autoscroll = () => {
 
 //message event
 socket.on('message', (message) => {
-    console.log(message)
+    //console.log(message)
     const html = Mustache.render(messageTemplate, {
         username: message.username,
         message: message.text,
@@ -47,7 +47,7 @@ socket.on('message', (message) => {
 
 //rendering location to html
 socket.on('locationMessage', (message) => {
-    console.log(message)
+    //console.log(message)
     const locationURL = Mustache.render(locationTemplate, {
         username: message.username,
         url: message.url,
@@ -79,7 +79,7 @@ formMessage.addEventListener('submit', (e) => {
         messageText.focus()
         //sends error if a bad word is in the message
         if (error) return console.log(error)
-        console.log('Message delivered!')
+        //console.log('Message delivered!')
     })
 })
 
